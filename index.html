@@ -40,6 +40,8 @@
     <p>
       Y Deg: <span id="ydeg"></span>
     </p>
+
+    <p id="loading">LOADING...</p>
   </div>
 
   <script src="js/three.min.js"></script>
@@ -102,6 +104,13 @@
         wnd.document.write(output);
       }
     }
+    </script>
+
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event){
+      document.getElementById("loading").remove();
+
+});
     </script>
 
   </body>

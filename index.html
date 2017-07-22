@@ -2,13 +2,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>three.js webgl - loaders - OBJ loader</title>
+  <title>Kometen Angucker</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <style>
   body {
     font-family: Monospace;
-    background-color: #000;
     color: #fff;
     margin: 0px;
     overflow: hidden;
@@ -23,6 +22,13 @@
     display:block;
   }
   #info a, .button { color: #f00; font-weight: bold; text-decoration: underline; cursor: pointer }
+
+  img{
+    width: 100px;
+    border: 1px solid #fff;
+    display: block;
+
+  }
   </style>
 </head>
 
@@ -39,153 +45,64 @@
   <script src="js/three.min.js"></script>
   <script src="js/OBJLoader.js"></script>
 
-  <script>
+  <script src="js/main.js" charset="utf-8"></script>
 
-  var container;
-
-  var camera, scene, renderer, mesh;
-
-  var mouseX = 0, mouseY = 0;
-
-  var windowHalfX = window.innerWidth / 2;
-  var windowHalfY = window.innerHeight / 2;
-
-
-  init();
-  animate();
-
-
-  function init() {
-
-    container = document.createElement( 'div' );
-    document.body.appendChild( container );
-
-    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-    camera.position.z = 250;
-
-    // scene
-
-    scene = new THREE.Scene();
-
-    var ambient = new THREE.AmbientLight( 0x101030 );
-    scene.add( ambient );
-
-    var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-    directionalLight.position.set( 0, 0, 1 );
-    scene.add( directionalLight );
-
-    // texture
-
-    var manager = new THREE.LoadingManager();
-    manager.onProgress = function ( item, loaded, total ) {
-
-      console.log( item, loaded, total );
-
-    };
-
-    var texture = new THREE.Texture();
-
-    var onProgress = function ( xhr ) {
-      if ( xhr.lengthComputable ) {
-        var percentComplete = xhr.loaded / xhr.total * 100;
-        console.log( Math.round(percentComplete, 2) + '% downloaded' );
-      }
-    };
-
-    var onError = function ( xhr ) {
-    };
-
-
-    var loader = new THREE.ImageLoader( manager );
-    loader.load( 'textures/tex.jpg', function ( image ) {
-
-      texture.image = image;
-      texture.needsUpdate = true;
-
-    } );
-
-    // model
-
-    var loader = new THREE.OBJLoader( manager );
-    loader.load( 'teapot.obj', function ( object ) {
-
-      object.traverse( function ( child ) {
-
-        if ( child instanceof THREE.Mesh ) {
-
-          child.material.map = texture;
-
-        }
-
-      } );
-
-      object.scale.set(10,10,10);
-
-      object.position.y = 0;
-      mesh = object;
-      scene.add( object );
-
-    }, onProgress, onError );
-
-    //
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    container.appendChild( renderer.domElement );
-
-    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
-    //
-
-    window.addEventListener( 'resize', onWindowResize, false );
-
-  }
-
-  function onWindowResize() {
-
-    windowHalfX = window.innerWidth / 2;
-    windowHalfY = window.innerHeight / 2;
-
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
-  }
-
-  function onDocumentMouseMove( event ) {
-
-    mouseX = ( event.clientX - windowHalfX ) ;
-    mouseY = ( event.clientY - windowHalfY ) ;
-    //mouseX = Math.sin(event.clientX);
-    if(mesh){
-      document.getElementById('xdeg').innerHTML = Math.round(mesh.rotation .x * 180/Math.PI);
-      document.getElementById('ydeg').innerHTML = Math.round(mesh.rotation .y * 180/Math.PI);
-    }
-
-  }
-
-  //
-
-  function animate() {
-
-    requestAnimationFrame( animate );
-    render();
-
-  }
-
-  function render() {
-    if(mesh){
-      mesh.rotation .y = ( - mouseX - mesh.rotation.y ) * .005;
-      mesh.rotation.x = ( + mouseY + mesh.rotation.x ) * .005;
-    }
-    camera.lookAt( mesh.position );
-    renderer.render( scene, camera );
-
-  }
-
+  <script type="text/javascript">
+  var database = [];
   </script>
+  <script src="js/database.json" charset="utf-8"></script>
 
-</body>
-</html>
+  <script type="text/javascript">
+
+  function addImg(src){
+    var info = document.getElementById('info');
+    var imgs = info.getElementsByTagName('img');
+    for(var i = 0; i < imgs.length; i++){
+
+      if(imgs[i].src.includes(src)){
+        return;
+      }
+    }
+    var img = document.createElement("img");
+    img.setAttribute("src", src);
+    info.append(img);
+  }
+  window.onclick = function(){
+
+    var images = document.getElementsByTagName('img');
+    while(images.length > 0) {
+      images[0].parentNode.removeChild(images[0]);
+    }
+
+    x = mesh.rotation.x * 180/Math.PI;
+    y = mesh.rotation.y * 180/Math.PI;
+
+    database.forEach(function(e){
+      if(e.x > x -10 && e.x < x + 10 &&
+        e.y > y -10 && e.y < y + 10 ){
+          addImg(e.path);
+        }
+      });
+    }
+    </script>
+
+    <script type="text/javascript">
+    var output = "";
+    var canvas = document.getElementsByTagName('canvas')[0];
+    window.onkeypress = function (event) {
+      var x = event.which || event.keyCode;
+      if(x == 113){
+        x = mesh.rotation.x * 180/Math.PI;
+        y = mesh.rotation.y * 180/Math.PI;
+        var item = {x: x, y : y, path:  renderer.domElement.toDataURL("image/png")};
+        database.push(item);
+      }  else if(x == 119){
+        output = "var database =" + JSON.stringify(database) + ";";
+        var wnd = window.open("data:application/json", "database.json", "_blank");
+        wnd.document.write(output);
+      }
+    }
+    </script>
+
+  </body>
+  </html>

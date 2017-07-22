@@ -1,0 +1,22 @@
+<style media="screen">
+  img{
+    border: 2px solid yellow;
+  }
+</style>
+
+<header id="header">
+
+</header>
+<script src="js/database.json" charset="utf-8"></script>
+<script type="text/javascript">
+  database.forEach(function(e) {
+    var img = document.createElement("img");
+img.src = e.path;
+
+var src = document.getElementById("header");
+src.appendChild(img);
+
+
+
+  });
+</script>
